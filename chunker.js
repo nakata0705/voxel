@@ -8,7 +8,7 @@ module.exports = function(opts) {
 module.exports.Chunker = Chunker
 
 function Chunker(opts) {
-  this.distance = opts.chunkDistance || 2
+  this.distance = opts.chunkDistance || 0
   this.chunkSize = opts.chunkSize || 32
   this.chunkPad = opts.chunkPad !== undefined ? opts.chunkPad : 0
   this.cubeSize = opts.cubeSize || 25
