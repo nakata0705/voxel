@@ -3,7 +3,7 @@ var ndarray = require('ndarray')
 
 module.exports = function(opts) {
   if (!opts.generateVoxelChunk) opts.generateVoxelChunk = function(low, high) {
-    return generate(low, high, module.exports.generator['Valley'])
+	return generate32(low, high, function(i, j, k) { return 0; })
   }
   return chunker(opts)
 }
