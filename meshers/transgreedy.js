@@ -177,19 +177,9 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
     }
   }
   
-  // ## enable code to ensure that transparent faces are last in the list
-  // var vertex_count = vertices.length;
-  // var newFaces = tFaces.map(function(v) {
-  //   return [vertex_count+v[0], vertex_count+v[1], vertex_count+v[2], vertex_count+v[3], v[4]]
-  // })
-  // 
-  // return { vertices:vertices.concat(tVertices), faces:faces.concat(newFaces) };
-  
-  // TODO: Try sorting by texture to see if we can reduce draw calls.
-  // faces.sort(function sortFaces(a, b) {
-  //   return b[4] - a[4];
-  // })
-  return { vertices:vertices, tVertices: tVertices, faces:faces, tFaces: tFaces };
+  // 透明部分と不透明部分を分離した状態で返す
+  return { vertices:vertices, tVertices: tVertices, faces:faces, tFaces: tFaces }
+}
 })();
 
 if(exports) {
