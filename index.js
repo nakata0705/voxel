@@ -108,13 +108,13 @@ module.exports.scale = function ( x, fromLow, fromHigh, toLow, toHigh ) {
 // convenience function that uses the above functions to prebake some simple voxel geometries
 module.exports.generateExamples = function() {
   return {
-    'Sphere': generate([-16,-16,-16], [16,16,16], module.exports.generator['Sphere']),
-    'Noise': generate([0,0,0], [16,16,16], module.exports.generator['Noise']),
-    'Dense Noise': generate([0,0,0], [16,16,16], module.exports.generator['Dense Noise']),
-    'Checker': generate([0,0,0], [8,8,8], module.exports.generator['Checker']),
-    'Hill': generate([-16, 0, -16], [16,16,16], module.exports.generator['Hill']),
-    'Valley': generate([0,0,0], [32,32,32], module.exports.generator['Valley']),
-    'Hilly Terrain': generate([0, 0, 0], [32,32,32], module.exports.generator['Hilly Terrain'])
+    'Sphere': generate32([-16,-16,-16], [16,16,16], module.exports.generator['Sphere']),
+    'Noise': generate32([0,0,0], [16,16,16], module.exports.generator['Noise']),
+    'Dense Noise': generate32([0,0,0], [16,16,16], module.exports.generator['Dense Noise']),
+    'Checker': generate32([0,0,0], [8,8,8], module.exports.generator['Checker']),
+    'Hill': generate32([-16, 0, -16], [16,16,16], module.exports.generator['Hill']),
+    'Valley': generate32([0,0,0], [32,32,32], module.exports.generator['Valley']),
+    'Hilly Terrain': generate32([0, 0, 0], [32,32,32], module.exports.generator['Hilly Terrain'])
   }
 }
 
