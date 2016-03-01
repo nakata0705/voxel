@@ -189,7 +189,7 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
   // faces.sort(function sortFaces(a, b) {
   //   return b[4] - a[4];
   // })
-  return { vertices:vertices, tVertices: tVertices, faces:faces, tFaces: tFaces };}；
+  return { vertices:vertices, tVertices: tVertices, faces:faces, tFaces: tFaces };
 })();
 
 if(exports) {
