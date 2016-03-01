@@ -80,6 +80,7 @@ Chunker.prototype.generateChunk = function(x, y, z) {
   var bounds = this.getBounds(x, y, z)
   var chunk = this.generateVoxelChunk(bounds[0], bounds[1], x, y, z)
   chunk.position = cpos
+  chunk.empty = true
   this.chunks[ckey] = chunk
   return chunk
 }
