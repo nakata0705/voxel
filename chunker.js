@@ -71,12 +71,16 @@ Chunker.prototype.getBounds = function(x, y, z) {
 }
 
 Chunker.prototype.generateChunk = function(x, y, z) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  var chunk = this.chunks[ckey]
+  if (chunk !== undefined) return chunk
+  
   var self = this
   var bounds = this.getBounds(x, y, z)
   var chunk = this.generateVoxelChunk(bounds[0], bounds[1], x, y, z)
-  var position = [x, y, z]
-  chunk.position = position
-  this.chunks[position.join('|')] = chunk
+  chunk.position = cpos
+  this.chunks[ckey] = chunk
   return chunk
 }
 
