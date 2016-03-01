@@ -6,12 +6,11 @@ var mask = new Int32Array(4096);
 // next to each other.
 var invMask = new Int32Array(4096);
 
-// setting 16th bit if transparent
-var kTransparentMask    = 0x8000;
-var kNoFlagsMask        = 0x7FFF;
-var kTransparentTypes   = [];
-
-kTransparentTypes[16] = true
+// 32bitのボクセルIDで表現されるスペースのうち、最上位ビットは透明フラグとする
+var kTransparentMask    = 0x80000000;
+// 32bitのボクセルIDで表現されるスペースのうち、残りの3ビットはボクセルの正面方向を指定するフラグとする
+var kFaceDirectionMask	= 0x70000000;
+var kNoFlagsMask        = 0x01FFFFFF;
 
 function isTransparent(v) {
   return (v & kTransparentMask) === kTransparentMask;
@@ -39,8 +38,8 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
   //Sweep over 3-axes
   for(var d=0; d<3; ++d) {
     var i, j, k, l, w, W, h, n, c
-      , u = (d+1)%3
-      , v = (d+2)%3
+      , u = d === 0 ? 2 : d === 1 ? 2 : 0
+      , v = d === 0 ? 1 : d === 1 ? 0 : 1
       , x = [0,0,0]
       , q = [0,0,0]
       , du = [0,0,0]
@@ -73,20 +72,27 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
           var a = xd >= 0      && getType(volume, x[0]      + dimsX * x[1]          + dimsXY * x[2]          )
             , b = xd < dimsD-1 && getType(volume, x[0]+q[0] + dimsX * x[1] + qdimsX + dimsXY * x[2] + qdimsXY)
 
-          // both are transparent, add to both directions
           if (isTransparent(a) && isTransparent(b)) {
-            mask[n] = a;
-            invMask[n] = b;
-          // if a is solid and b is not there or transparent
+            if (a !== b) {
+              // 両面が透明だが、それぞれの素材が違うため、両面とも描画する
+              mask[n] = a;
+              invMask[n] = b;
+            }
+            else {
+              // 両面が透明でかつ同じ素材なので、描画しない
+              mask[n] = 0;
+              invMask[n] = 0;
+            }
           } else if (a && (!b || isTransparent(b))) {
+            // aが不透明でbが存在しないか半透明
             mask[n] = a;
             invMask[n] = 0
-          // if b is solid and a is not there or transparent
           } else if (b && (!a || isTransparent(a))) {
+            // bが不透明でaが存在しないか半透明
             mask[n] = 0
             invMask[n] = b;
-          // dont draw this face
           } else {
+            // 描画の必要なし
             mask[n] = 0
             invMask[n] = 0
           }
@@ -134,22 +140,24 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
               dv[u] = w; dv[v] = 0;
             }
             
-            // ## enable code to ensure that transparent faces are last in the list
-            // if (!isTransparent(c)) {
-              var vertex_count = vertices.length;
+            var vertex_count
+            if (!isTransparent(c)) {
+              // 不透明な頂点と面としてバッファに値を追加
               vertices.push([x[0],             x[1],             x[2]            ]);
               vertices.push([x[0]+du[0],       x[1]+du[1],       x[2]+du[2]      ]);
               vertices.push([x[0]+du[0]+dv[0], x[1]+du[1]+dv[1], x[2]+du[2]+dv[2]]);
               vertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
-              faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, removeFlags(c)]);
-            // } else {
-            //   var vertex_count = tVertices.length;
-            //   tVertices.push([x[0],             x[1],             x[2]            ]);
-            //   tVertices.push([x[0]+du[0],       x[1]+du[1],       x[2]+du[2]      ]);
-            //   tVertices.push([x[0]+du[0]+dv[0], x[1]+du[1]+dv[1], x[2]+du[2]+dv[2]]);
-            //   tVertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
-            //   tFaces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, removeFlags(c)]);
-            // }
+              vertex_count = vertices.length;
+              faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
+            } else {
+              // 透明な頂点と面としてバッファに値を追加
+               tVertices.push([x[0],             x[1],             x[2]            ]);
+               tVertices.push([x[0]+du[0],       x[1]+du[1],       x[2]+du[2]      ]);
+               tVertices.push([x[0]+du[0]+dv[0], x[1]+du[1]+dv[1], x[2]+du[2]+dv[2]]);
+               tVertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
+               vertex_count = tVertices.length;
+               tFaces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
+            }
 
             //Zero-out mask
             W = n + w;
@@ -181,8 +189,7 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
   // faces.sort(function sortFaces(a, b) {
   //   return b[4] - a[4];
   // })
-  return { vertices:vertices, faces:faces };
-}
+  return { vertices:vertices, tVertices: tVertices, faces:faces, tFaces: tFaces };}；
 })();
 
 if(exports) {
