@@ -28,16 +28,25 @@ function Chunker(opts) {
 inherits(Chunker, events.EventEmitter)
 
 Chunker.prototype.nearbyChunks = function(position, distance) {
-  var current = this.chunkAtPosition(position)
-  var x = current[0]
-  var y = current[1]
-  var z = current[2]
+  var cpos = this.chunkAtPosition(position)
+  return this.nearbyChunksCoordinate(cpos, distance);
+}
+
+Chunker.prototype.nearbyChunksCoordinate = function(cpos, distance) {
+  var x = cpos[0]
+  var y = cpos[1]
+  var z = cpos[2]
   var dist = distance || this.distance
   var nearby = []
-  for (var cx = (x - dist); cx !== (x + dist); ++cx) {
-    for (var cy = (y - dist); cy !== (y + dist); ++cy) {
-      for (var cz = (z - dist); cz !== (z + dist); ++cz) {
-        nearby.push([cx, cy, cz])
+  if (dist === 0) {
+      nearby.push([x, y, z]);
+  }
+  else {
+    for (var cx = (x - dist); cx !== (x + dist); ++cx) {
+      for (var cy = (y - dist); cy !== (y + dist); ++cy) {
+        for (var cz = (z - dist); cz !== (z + dist); ++cz) {
+          nearby.push([cx, cy, cz])
+        }
       }
     }
   }
@@ -92,10 +101,18 @@ Chunker.prototype.voxelIndexFromCoordinates = function(x, y, z) {
   throw new Error('Chunker.prototype.voxelIndexFromCoordinates removed, use voxelAtCoordinates')
 }
 
-Chunker.prototype.voxelAtCoordinates = function(x, y, z, val) {
-  var ckey = this.chunkAtCoordinates(x, y, z).join('|')
+Chunker.prototype.voxelAtCoordinates = function(x, y, z, val, auto) {
+  var cpos = this.chunkAtCoordinates(x, y, z)
+  var ckey = cpos.join('|')
   var chunk = this.chunks[ckey]
-  if (!chunk) return false
+  if (chunk === undefined) {
+      // もしチャンクが存在せず、新規に代入されたボクセル値が0あるいはundefinedなら、自動的にチャンクを作成する設定でも新しいチャンクは作成しない
+      if (val === 0) return [0, null]
+      if (auto && typeof val !== 'undefined'　&& val !== 0) chunk = this.generateChunk(cpos[0], cpos[1], cpos[2])
+      else return [0, null]
+  } 
+  
+  // チャンクの周囲に設定したパディングを考慮してボクセル値を代入する
   var mask = this.chunkMask
   var h = this.chunkPadHalf
   var mx = x & mask
@@ -104,16 +121,19 @@ Chunker.prototype.voxelAtCoordinates = function(x, y, z, val) {
   var v = chunk.get(mx+h, my+h, mz+h)
   if (typeof val !== 'undefined') {
     chunk.set(mx+h, my+h, mz+h, val)
+    
+    // [ToDo] このコードはチャンクをクラス化したら、内部処理として取り込む
+    if (val !== 0x00) chunk.empty = false
   }
-  return v
+  return [v, chunk]
 }
 
-Chunker.prototype.voxelAtPosition = function(pos, val) {
+Chunker.prototype.voxelAtPosition = function(pos, val, auto) {
   var cubeSize = this.cubeSize;
   var x = Math.floor(pos[0] / cubeSize)
   var y = Math.floor(pos[1] / cubeSize)
   var z = Math.floor(pos[2] / cubeSize)
-  var v = this.voxelAtCoordinates(x, y, z, val)
+  var v = this.voxelAtCoordinates(x, y, z, val, auto)
   return v;
 }
 
