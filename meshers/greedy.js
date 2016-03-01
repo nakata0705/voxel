@@ -1,6 +1,7 @@
 var GreedyMesh = (function() {
 //Cache buffer internally
-var mask = new Int32Array(4096);
+var mask = new Uint32Array(4096);
+var maskDirection = new Uint32Array(4096);
 
 return function(volume, dims) {
   var vertices = [], faces = []
@@ -24,7 +25,8 @@ return function(volume, dims) {
       , xd
 
     if (mask.length < dimsU * dimsV) {
-      mask = new Int32Array(dimsU * dimsV);
+      mask = new Uint32Array(dimsU * dimsV);
+      maskDirection = new Uint32Array(dimsU * dimsV);
     }
 
     q[d] =  1;
@@ -45,7 +47,8 @@ return function(volume, dims) {
           if (a ? b : !b) {
             mask[n] = 0; continue;
           }
-          mask[n] = a ? a : -b;
+          mask[n] = a ? a : b;
+          maskDirection[n] = a ? 1 : -1;
         }
       }
 
@@ -55,19 +58,19 @@ return function(volume, dims) {
       n = 0;
       for (j=0; j < dimsV; ++j) {
         for (i=0; i < dimsU; ) {
-          c = mask[n];
+          c = mask[n] * maskDirection[n];
           if (!c) {
             i++;  n++; continue;
           }
 
           //Compute width
           w = 1;
-          while (c === mask[n+w] && i+w < dimsU) w++;
+          while (c === mask[n+w] * maskDirection[n+w] && i+w < dimsU) w++;
 
           //Compute height (this is slightly awkward)
           for (h=1; j+h < dimsV; ++h) {
             k = 0;
-            while (k < w && c === mask[n+k+h*dimsU]) k++
+            while (k < w && c === mask[n+k+h*dimsU] * maskDirection[n+k+h*dimsU]) k++
             if (k < w) break;
           }
 
@@ -97,6 +100,7 @@ return function(volume, dims) {
           for(l=0; l<h; ++l) {
             for(k=n; k<W; ++k) {
               mask[k+l*dimsU] = 0;
+              maskDirection[k+l*dimsU] = 1;
             }
           }
 
