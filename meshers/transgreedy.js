@@ -10,7 +10,7 @@ var invMask = new Int32Array(4096);
 var kTransparentMask    = 0x80000000;
 // 32bitのボクセルIDで表現されるスペースのうち、残りの3ビットはボクセルの正面方向を指定するフラグとする
 var kFaceDirectionMask	= 0x70000000;
-var kNoFlagsMask        = 0x01FFFFFF;
+var kNoFlagsMask        = 0x0FFFFFFF;
 
 function isTransparent(v) {
   return (v & kTransparentMask) === kTransparentMask;
@@ -143,19 +143,19 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
             var vertex_count
             if (!isTransparent(c)) {
               // 不透明な頂点と面としてバッファに値を追加
+              vertex_count = vertices.length;
               vertices.push([x[0],             x[1],             x[2]            ]);
               vertices.push([x[0]+du[0],       x[1]+du[1],       x[2]+du[2]      ]);
               vertices.push([x[0]+du[0]+dv[0], x[1]+du[1]+dv[1], x[2]+du[2]+dv[2]]);
               vertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
-              vertex_count = vertices.length;
               faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
             } else {
               // 透明な頂点と面としてバッファに値を追加
+               vertex_count = tVertices.length;
                tVertices.push([x[0],             x[1],             x[2]            ]);
                tVertices.push([x[0]+du[0],       x[1]+du[1],       x[2]+du[2]      ]);
                tVertices.push([x[0]+du[0]+dv[0], x[1]+du[1]+dv[1], x[2]+du[2]+dv[2]]);
                tVertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
-               vertex_count = tVertices.length;
                tFaces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
             }
 
