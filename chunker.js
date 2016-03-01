@@ -155,7 +155,7 @@ Chunker.prototype.voxelAtCoordinates = function(x, y, z, val, auto) {
   if (chunk === undefined) {
       // もしチャンクが存在せず、新規に代入されたボクセル値が0あるいはundefinedなら、自動的にチャンクを作成する設定でも新しいチャンクは作成しない
       if (val === 0) return [0, null]
-      if (auto && typeof val !== 'undefined'　&& val !== 0) chunk = this.generateChunk(cpos[0], cpos[1], cpos[2])
+      if (auto && typeof val !== 'undefined') chunk = this.generateChunk(cpos[0], cpos[1], cpos[2])
       else return [0, null]
   } 
   
