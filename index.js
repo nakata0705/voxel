@@ -19,9 +19,10 @@ module.exports.meshers = {
 module.exports.Chunker = chunker.Chunker
 module.exports.geometry = {}
 module.exports.generator = {}
-module.exports.generate = generate
+module.exports.generate32 = generate32
+module.exports.generate8 = generate8
 
-function generate(lo, hi, fn) {
+function generate32(lo, hi, fn) {
   // To fix the display gaps, we need to pad the bounds
   lo[0]--
   lo[1]--
@@ -30,7 +31,25 @@ function generate(lo, hi, fn) {
   hi[1]++
   hi[2]++
   var dims = [hi[2]-lo[2], hi[1]-lo[1], hi[0]-lo[0]]
-  var data = ndarray(new Uint16Array(dims[2] * dims[1] * dims[0]), dims)
+  var data = ndarray(new Uint32Array(dims[2] * dims[1] * dims[0]), dims)
+  for (var k = lo[2]; k < hi[2]; k++)
+    for (var j = lo[1]; j < hi[1]; j++)
+      for(var i = lo[0]; i < hi[0]; i++) {
+        data.set(k-lo[2], j-lo[1], i-lo[0], fn(i, j, k))
+      }
+  return data
+}
+
+function generate8(lo, hi, fn) {
+  // To fix the display gaps, we need to pad the bounds
+  lo[0]--
+  lo[1]--
+  lo[2]--
+  hi[0]++
+  hi[1]++
+  hi[2]++
+  var dims = [hi[2]-lo[2], hi[1]-lo[1], hi[0]-lo[0]]
+  var data = ndarray(new Uint8Array(dims[2] * dims[1] * dims[0]), dims)
   for (var k = lo[2]; k < hi[2]; k++)
     for (var j = lo[1]; j < hi[1]; j++)
       for(var i = lo[0]; i < hi[0]; i++) {
