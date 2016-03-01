@@ -15,6 +15,7 @@ function Chunker(opts) {
   this.generateVoxelChunk = opts.generateVoxelChunk
   this.chunks = {}
   this.meshes = {}
+  this.bodiesArray = {}
 
   if (this.chunkSize & this.chunkSize-1 !== 0)
     throw new Error('chunkSize must be a power of 2')
@@ -77,6 +78,52 @@ Chunker.prototype.generateChunk = function(x, y, z) {
   chunk.position = position
   this.chunks[position.join('|')] = chunk
   return chunk
+}
+
+Chunker.prototype.getChunk = function(x, y, z) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  var chunk = this.chunks[ckey]
+  if (chunk) return chunk
+  else return undefined  
+}
+
+Chunker.prototype.deleteChunk = function(x, y, z) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  var chunk = this.chunks[ckey]
+  if (chunk) delete this.chunks[ckey]; 
+}
+
+Chunker.prototype.getMeshes = function (x, y, z) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  var meshes = this.meshes[ckey]
+  if (meshes) return meshes
+  else return undefined  
+}
+
+Chunker.prototype.setMeshes = function (x, y, z, mesh) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  if (mesh === undefined) this.meshes[ckey] = undefined
+  if (!this.meshes[ckey]) this.meshes[ckey] = [mesh]
+  else this.meshes[ckey].push(mesh)
+}
+
+Chunker.prototype.getBodies = function (x, y, z) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  var bodies = this.bodiesArray[ckey]
+  if (bodies) return bodies
+  else return undefined  
+}
+
+Chunker.prototype.setBodies = function (x, y, z, bodies) {
+  var cpos = [x, y, z];
+  var ckey = cpos.join('|')
+  this.bodiesArray[ckey] = bodies
+  return bodies;
 }
 
 Chunker.prototype.chunkAtCoordinates = function(x, y, z) {
