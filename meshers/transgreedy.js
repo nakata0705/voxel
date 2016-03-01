@@ -38,8 +38,8 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
   //Sweep over 3-axes
   for(var d=0; d<3; ++d) {
     var i, j, k, l, w, W, h, n, c
-      , u = d === 0 ? 2 : d === 1 ? 2 : 0
-      , v = d === 0 ? 1 : d === 1 ? 0 : 1
+      , u = (d+2)%3 //d === 0 ? 2 : d === 1 ? 2 : 0
+      , v = (d+1)%3 //d === 0 ? 1 : d === 1 ? 0 : 1
       , x = [0,0,0]
       , q = [0,0,0]
       , du = [0,0,0]
