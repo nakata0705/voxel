@@ -21,7 +21,7 @@ module.exports.geometry = {}
 module.exports.generator = {}
 module.exports.generate = generate
 
-function generate(lo, hi, fn, game) {
+function generate(lo, hi, fn) {
   // To fix the display gaps, we need to pad the bounds
   lo[0]--
   lo[1]--
