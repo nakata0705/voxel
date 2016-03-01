@@ -1,7 +1,7 @@
 {
-  "name": "voxel",
+  "name": "voxel_nakata0705",
   "description": "tools to work with voxel generation and chunking in javascript",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "index.js",
   "dependencies": {
     "inherits": "1.0.0",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/maxogden/voxel.git"
+    "url": "https://github.com/nakata0705/voxel.git"
   },
   "scripts": {
     "test": "node test.js"
   },
   "author": {
-    "name": "Max Ogden",
-    "email": "max@maxogden.com"
+    "name": "Satoru Nakata",
+    "email": "nakata0705@gmail.com"
   },
   "license": "MIT",
   "engine": {
