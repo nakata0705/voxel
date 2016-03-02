@@ -29,7 +29,7 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
 
   var transparentTypes = mesherExtraData ? (mesherExtraData.transparentTypes || {}) : {};
   var getType = function(voxels, offset) {
-    var type = voxels[offset];
+    var type = voxels[offset].v;
     return type | (type in transparentTypes ? kTransparentMask : 0);
   }
 
