@@ -20,7 +20,6 @@ module.exports.Chunker = chunker.Chunker
 module.exports.geometry = {}
 module.exports.generator = {}
 module.exports.generate32 = generate32
-module.exports.ndarray = ndarray
 
 function generate32(lo, hi, fn) {
   // To fix the display gaps, we need to pad the bounds
