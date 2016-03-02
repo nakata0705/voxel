@@ -1,9 +1,8 @@
 var GreedyMesh = (function greedyLoader() {
     
-// contains all forward faces (in terms of scan direction)
+// スキャン方向に正面の面の情報を入れる
 var mask = new Int32Array(4096);
-// and all backwards faces. needed when there are two transparent blocks
-// next to each other.
+// スキャン方向に背面の面の情報を入れる
 var invMask = new Int32Array(4096);
 
 // 32bitのボクセルIDで表現されるスペースのうち、最上位ビットは透明フラグとする
