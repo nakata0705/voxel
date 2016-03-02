@@ -1,9 +1,9 @@
 var GreedyMesh = (function greedyLoader() {
     
 // スキャン方向に正面の面の情報を入れる
-var mask = new Int32Array(4096);
+var mask = new Uint32Array(4096);
 // スキャン方向に背面の面の情報を入れる
-var invMask = new Int32Array(4096);
+var invMask = new Uint32Array(4096);
 
 // 32bitのボクセルIDで表現されるスペースのうち、最上位ビットは透明フラグとする
 var kTransparentMask    = 0x80000000;
@@ -50,8 +50,8 @@ return function ohSoGreedyMesher(volume, dims, mesherExtraData) {
       , xd
 
     if (mask.length < dimsU * dimsV) {
-      mask = new Int32Array(dimsU * dimsV);
-      invMask = new Int32Array(dimsU * dimsV);
+      mask = new Uint32Array(dimsU * dimsV);
+      invMask = new Uint32Array(dimsU * dimsV);
     }
 
     q[d] =  1;
