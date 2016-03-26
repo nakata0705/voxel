@@ -13,6 +13,7 @@ function Chunker(opts) {
   this.chunkPad = opts.chunkPad !== undefined ? opts.chunkPad : 0
   this.cubeSize = opts.cubeSize || 25
   this.generateVoxelChunk = opts.generateVoxelChunk
+  this.parentEntity = opts.parentEntity
   this.chunks = {}
   this.meshes = {}
   this.bodiesArray = {}
